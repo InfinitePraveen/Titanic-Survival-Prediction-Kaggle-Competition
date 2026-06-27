@@ -2,7 +2,7 @@
 
 [![Kaggle](https://img.shields.io/badge/Kaggle-Notebook-20BEFF?style=flat&logo=kaggle)](https://www.kaggle.com/code/infinitepraveen/titanic-survival-predictions-ipynb?scriptVersionId=330090073)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+<!--[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)-->
 
 This repository contains my end-to-end solution for the classic Kaggle beginner competition: **Titanic: Machine Learning from Disaster**. The goal of this project is to build a predictive model that answers the question: *"What sorts of people were more likely to survive?"* using passenger data (e.g., name, age, gender, socio-economic class, etc.).
 
@@ -10,7 +10,7 @@ This repository contains my end-to-end solution for the classic Kaggle beginner 
 
 ## 🔍 Live & Upvotes on Kaggle
 - **Live Views**: 45
-- **Upvotes**: (Coming soon)
+- **Upvotes**: 3
 - **Kaggle Notebook Link**: [Click here to view my submission](https://www.kaggle.com/code/infinitepraveen/titanic-survival-predictions-ipynb?scriptVersionId=330090073)
 
 ---
@@ -129,14 +129,14 @@ The final tuned **Gradient Boosting** model was used to make predictions on the 
 - **Matplotlib & Seaborn**: Data visualization.
 - **Scikit-learn**: Machine learning models, preprocessing, and evaluation.
 - **Joblib**: Model serialization.
-
+<!--
 ---
 
 ## 📄 License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
+-->
 ## 👤 Author
 **Praveen Kumar**
 - GitHub: [@InfinitePraveen](https://github.com/InfinitePraveen)
