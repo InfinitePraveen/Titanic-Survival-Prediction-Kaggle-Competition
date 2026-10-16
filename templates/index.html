@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071421">
+  <meta name="description" content="An interactive Titanic passenger survival prediction demo built with Flask and scikit-learn.">
+  <title>Titanic | Passenger Survival Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <nav class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">T</span><span>TITANIC <small>PASSENGER LAB</small></span></a>
+    <div class="nav-right"><span class="status-dot"></span> ML MODEL ONLINE <span class="nav-divider"></span><a href="https://www.kaggle.com/competitions/titanic" target="_blank" rel="noreferrer">THE CHALLENGE ↗</a></div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span>15 APRIL 1912</span><i></i><span>AN INTERACTIVE ML EXPERIENCE</span></div>
+      <h1>One voyage.<br><em>Two possible outcomes.</em></h1>
+      <p class="hero-copy">Explore the passenger details that a machine-learning model uses to estimate survival. Adjust the manifest and see what the model predicts.</p>
+      <div class="hero-stats">
+        <div><strong>2</strong><span>OUTCOMES</span></div><div class="stat-line"></div>
+        <div><strong>7</strong><span>INPUT FEATURES</span></div><div class="stat-line"></div>
+        <div><strong>01</strong><span>PASSENGER AT A TIME</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="form-panel">
+        <div class="panel-heading"><div><span class="section-index">01 / PASSENGER MANIFEST</span><h2>Who is aboard?</h2></div><span class="ship-icon">⌁</span></div>
+        <p class="muted">Enter the passenger details below to run a prediction.</p>
+        {% if error %}<div class="error-message">{{ error }}</div>{% endif %}
+        <form method="POST" action="/">
+          <div class="field full">
+            <label for="pclass">TICKET CLASS</label>
+            <div class="class-options">
+              <label class="class-option"><input type="radio" name="pclass" value="1" {% if passenger.get('Pclass', 3)|int == 1 %}checked{% endif %}><span><b>01</b><small>FIRST CLASS</small></span></label>
+              <label class="class-option"><input type="radio" name="pclass" value="2" {% if passenger.get('Pclass', 3)|int == 2 %}checked{% endif %}><span><b>02</b><small>SECOND CLASS</small></span></label>
+              <label class="class-option"><input type="radio" name="pclass" value="3" {% if passenger.get('Pclass', 3)|int == 3 %}checked{% endif %}><span><b>03</b><small>THIRD CLASS</small></span></label>
+            </div>
+          </div>
+          <div class="field full">
+            <label>SEX</label>
+            <div class="segmented">
+              <label><input type="radio" name="sex" value="female" {% if passenger.get('Sex', 'female') == 'female' %}checked{% endif %}><span>♀ &nbsp; Female</span></label>
+              <label><input type="radio" name="sex" value="male" {% if passenger.get('Sex', 'female') == 'male' %}checked{% endif %}><span>♂ &nbsp; Male</span></label>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label for="age">AGE <small>YEARS</small></label><input id="age" name="age" type="number" min="0" max="100" step="0.5" value="{{ passenger.get('Age', 28) }}" required></div>
+            <div class="field"><label for="fare">TICKET FARE <small>£ GBP</small></label><input id="fare" name="fare" type="number" min="0" step="0.01" value="{{ passenger.get('Fare', 14.0) }}" required></div>
+            <div class="field"><label for="sibsp">SIBLINGS / SPOUSE</label><input id="sibsp" name="sibsp" type="number" min="0" max="20" value="{{ passenger.get('SibSp', 0) }}" required></div>
+            <div class="field"><label for="parch">PARENTS / CHILDREN</label><input id="parch" name="parch" type="number" min="0" max="20" value="{{ passenger.get('Parch', 0) }}" required></div>
+          </div>
+          <div class="field full">
+            <label for="embarked">PORT OF EMBARKATION</label>
+            <select id="embarked" name="embarked">
+              <option value="S" {% if passenger.get('Embarked', 'S') == 'S' %}selected{% endif %}>Southampton — S</option>
+              <option value="C" {% if passenger.get('Embarked') == 'C' %}selected{% endif %}>Cherbourg — C</option>
+              <option value="Q" {% if passenger.get('Embarked') == 'Q' %}selected{% endif %}>Queenstown — Q</option>
+            </select>
+          </div>
+          <button class="predict-button" type="submit"><span>RUN SURVIVAL PREDICTION</span><b>↗</b></button>
+          <p class="form-note"><span>✦</span> Predictions are generated locally by a scikit-learn model.</p>
+        </form>
+      </div>
+
+      <aside class="result-panel">
+        <div class="result-top"><span class="section-index">02 / MODEL OUTPUT</span><span class="live-label"><i></i> LIVE RESULT</span></div>
+        {% if prediction is not none %}
+          {% if prediction == 1 %}
+          <div class="result-symbol survived">✦</div><p class="result-kicker">MODEL ESTIMATE</p><h2 class="result-title">Survival<br><em>predicted.</em></h2>
+          <p class="result-description">Based on the details provided, the model classifies this passenger in the <strong>survived</strong> category.</p>
+          {% else %}
+          <div class="result-symbol lost">↘</div><p class="result-kicker">MODEL ESTIMATE</p><h2 class="result-title">Survival not<br><em>predicted.</em></h2>
+          <p class="result-description">Based on the details provided, the model classifies this passenger in the <strong>did not survive</strong> category.</p>
+          {% endif %}
+          {% if probability is not none %}
+          <div class="probability"><div class="probability-label"><span>SURVIVAL PROBABILITY</span><strong>{{ "%.1f"|format(probability * 100) }}%</strong></div><div class="meter"><span style="width: {{ probability * 100 }}%"></span></div><small>Model-estimated probability, not a guarantee.</small></div>
+          {% endif %}
+          <div class="result-summary"><div><span>CLASS</span><strong>{{ passenger.get('Pclass', '—') }}{% if passenger.get('Pclass')|int == 1 %}st{% elif passenger.get('Pclass')|int == 2 %}nd{% else %}rd{% endif %}</strong></div><div><span>AGE</span><strong>{{ passenger.get('Age', '—') }} years</strong></div><div><span>TRAVELLING WITH</span><strong>{{ passenger.get('SibSp', 0)|int + passenger.get('Parch', 0)|int }} family</strong></div></div>
+        {% else %}
+          <div class="empty-result"><div class="compass">✧</div><p class="result-kicker">AWAITING MANIFEST</p><h2 class="result-title">Your result<br><em>will appear here.</em></h2><p class="result-description">Complete the passenger manifest and launch the model to reveal its estimate.</p><div class="ghost-route"><span>PASSENGER DETAILS</span><i></i><span>MODEL INFERENCE</span><i></i><span>RESULT</span></div></div>
+        {% endif %}
+        <div class="disclaimer"><span>ⓘ</span><p>This is an educational ML demo. Historical survival depended on many factors that are not represented here. Never interpret this result as certainty.</p></div>
+      </aside>
+    </section>
+
+    <section class="bottom-note"><div class="note-icon">✧</div><div><strong>BEHIND THE PREDICTION</strong><p>A Random Forest classifier learns patterns from passenger records. Inputs are imputed and encoded through a scikit-learn pipeline before inference.</p></div><a href="https://github.com/InfinitePraveen/Titanic-Survival-Prediction-Kaggle-Competition" target="_blank" rel="noreferrer">VIEW PROJECT ↗</a></section>
+  </main>
+  <footer><span>BUILT FOR LEARNING · NOT HISTORICAL CERTAINTY</span><span>DESIGNED & DEVELOPED BY <a href="https://github.com/InfinitePraveen" target="_blank" rel="noreferrer">PRAVEEN KUMAR</a> · <a href="https://www.linkedin.com/in/infinitepraveen/" target="_blank" rel="noreferrer">LINKEDIN ↗</a></span></footer>
+</body>
+</html>
